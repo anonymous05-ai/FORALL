@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc mừng 8/3 - Final Fix</title>
+    <style>
+        :root {
+            --bg: #fce4ec;
+            --env-color: #f06292;
+            --env-dark: #d81b60;
+            --letter-bg: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Container chính */
+        .envelope-wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        /* 1. Mặt lưng phong bì */
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--env-dark);
+            border-radius: 0 0 10px 10px;
+            z-index: 1;
+        }
+
+        /* 2. Tờ thư (Nằm giữa lưng và mặt trước) */
+        .letter {
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            width: 280px;
+            height: 180px;
+            background: var(--letter-bg);
+            z-index: 2; /* Lúc đầu thấp hơn mặt trước (z=3) */
+            transition: all 0.8s ease-in-out;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #ad1457;
+        }
+
+        /* 3. Mặt trước phong bì (Hình tam giác chồng lên nhau) */
+        .envelope-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 3; /* Luôn che tờ thư lúc đóng */
+        }
+
+        .envelope-front::before {
+            content: "";
+            position: absolute;
+            border-width: 100px 150px;
+            border-style: solid;
+            border-color: transparent var(--env-color) var(--env-color) var(--env-color);
+            border-radius: 0 0 10px 10px;
+        }
+
+        /* 4. Nắp phong bì */
+        .flap {
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid var(--env-dark);
+            transform-origin: top;
+            transition: all 0.5s ease-in-out;
+            z-index: 4;
+        }
+
+        /* HIỆU ỨNG KHI MỞ */
+        .envelope-wrapper.open .flap {
+            transform: rotateX(180deg);
+            z-index: 0; /* Đẩy nắp ra sau */
+        }
+
+        .envelope-wrapper.open .letter {
+            transform: translateY(-150px); /* Bay lên cao */
+            z-index: 10; /* QUAN TRỌNG: Nhảy lên đè lên mặt trước phong bì */
+            height: 250px; /* Dài ra cho dễ đọc */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Hướng dẫn */
+        .hint {
+            position: absolute;
+            bottom: -50px;
+            width: 100%;
+            text-align: center;
+            color: #d81b60;
+            font-weight: bold;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Particles */
+        .dot { position: absolute; pointer-events: none; z-index: 100; animation: fly 3s forwards; }
+        @keyframes fly {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-500px) translateX(50px) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="envelope-wrapper" id="box" onclick="openMe()">
+        <div class="flap"></div>
+        <div class="envelope-back"></div>
+        
+        <div class="letter" id="letter">
+            <h2 style="margin:0; font-size: 20px;">Happy Women's Day!</h2>
+            <p style="font-size: 14px; line-height: 1.5;">
+                Chúc một nửa thế giới luôn xinh đẹp, tự tin và hạnh phúc. 
+                Hy vọng bạn sẽ có một ngày 8/3 thật ý nghĩa bên những người thân yêu! 🌸
+            </p>
+            <span style="font-size: 12px; font-style: italic;">❤️ From me with love ❤️</span>
+        </div>
+
+        <div class="envelope-front"></div>
+        <div class="hint">Chạm để mở quà 🎁</div>
+    </div>
+
+    <script>
+        function openMe() {
+            const wrapper = document.getElementById('box');
+            if (wrapper.classList.contains('open')) return;
+
+            wrapper.classList.add('open');
+            document.querySelector('.hint').style.display = 'none';
+
+            // Hiệu ứng hạt bay
+            const icons = ['🌸', '❤️', '💖', '🌹', '✨'];
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    dot.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                    dot.style.left = (window.innerWidth / 2 + (Math.random() * 200 - 100)) + 'px';
+                    dot.style.top = (window.innerHeight / 2) + 'px';
+                    dot.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    document.body.appendChild(dot);
+                    setTimeout(() => dot.remove(), 3000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
